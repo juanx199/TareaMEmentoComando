@@ -87,26 +87,16 @@ public class CalculadoraGUI extends JFrame {
                         pantalla.setText(pantalla.getText() + comando);
                     }
                 } else if (comando.matches("[/\\*\\-\\+]")) {
+                    if (!operacionPendiente.isEmpty() && !nuevaEntrada) {
+                        // Ejecutar operación anterior si hay una pendiente y se ingresó un número
+                        ejecutarOperacion();
+                    }
                     primerValor = Double.parseDouble(pantalla.getText());
                     operacionPendiente = comando;
                     nuevaEntrada = true;
                 } else if (comando.equals("=")) {
                     if (!operacionPendiente.isEmpty()) {
-                        double segundoValor = Double.parseDouble(pantalla.getText());
-
-                        // Inicializamos el resultado con el primer valor si es la primera operación
-                        // para que el comando sea atómico, podemos hacer un SET del primer valor si el
-                        // historial está vacío
-                        // asumimos que 'primerValor' es el estado actual de la calculadora
-                        // y aplicamos la operación sobre ella.
-
-                        // sincronizamos el modelo con el primer valor antes de la operación
-                        calculadora.setResultadoActual(primerValor);
-
-                        ComandoOperacion op = new ComandoOperacion(calculadora, operacionPendiente, segundoValor);
-                        gestor.ejecutarComando(op);
-
-                        actualizarPantalla();
+                        ejecutarOperacion();
                         operacionPendiente = "";
                         nuevaEntrada = true;
                     }
@@ -114,24 +104,42 @@ public class CalculadoraGUI extends JFrame {
                     ComandoOperacion op = new ComandoOperacion(calculadora, "C", 0);
                     gestor.ejecutarComando(op);
                     actualizarPantalla();
+                    operacionPendiente = "";
                     nuevaEntrada = true;
                 } else if (comando.equals("Deshacer")) {
                     gestor.deshacer();
                     actualizarPantalla();
+                    operacionPendiente = "";
                     nuevaEntrada = true;
                 } else if (comando.equals("Rehacer")) {
                     gestor.rehacer();
                     actualizarPantalla();
+                    operacionPendiente = "";
                     nuevaEntrada = true;
                 }
             } catch (ArithmeticException ex) {
                 JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());
                 pantalla.setText("0");
                 nuevaEntrada = true;
+                operacionPendiente = "";
             } catch (Exception ex) {
+                ex.printStackTrace();
                 pantalla.setText("Error");
                 nuevaEntrada = true;
+                operacionPendiente = "";
             }
+        }
+
+        private void ejecutarOperacion() {
+            double segundoValor = Double.parseDouble(pantalla.getText());
+            // Sincronizamos el modelo con el primer valor acumulado
+            calculadora.setResultadoActual(primerValor);
+            
+            ComandoOperacion op = new ComandoOperacion(calculadora, operacionPendiente, segundoValor);
+            gestor.ejecutarComando(op);
+            actualizarPantalla();
+            // El resultado pasa a ser el primer valor para la siguiente operación encadenada
+            primerValor = calculadora.getResultadoActual();
         }
     }
 }
