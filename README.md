@@ -5,5 +5,7 @@
 
 # Diagrama UML de la solución. (2.5 PUNTOS)
 
-# Código Java aplicación funcional (GitHub). (2.5 PUNTOS)
+# Código Java aplicación funcional (GitHub). (2.5 PUNTOS) 
+### ¡¡¡EL UML ES EN PAPYRUS !!!
 
+<img width="987" height="935" alt="image" src="https://github.com/user-attachments/assets/dcf1ae14-4cf6-4490-9340-33ff7bc77a5c" />
